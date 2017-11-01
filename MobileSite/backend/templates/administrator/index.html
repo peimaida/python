@@ -1,0 +1,170 @@
+{% include 'common/header.html' %}
+{% include 'common/left.html' %}
+<section id="content">
+
+    <div class="page page-fullwidth-layout">
+
+        <div class="pageheader">
+
+            <h2>{{module_name}}</h2>
+
+            <div class="page-bar">
+
+                <ul class="page-breadcrumb">
+                    <li>
+                        <a href="/backend/admin"><i class="fa fa-user-secret"></i>{{module_name}}</a>
+                    </li>
+                    <li>
+                        {{module_title}}列表</a>
+                    </li>
+                </ul>
+
+            </div>
+
+        </div>
+
+        <!-- page content -->
+        <div class="pagecontent">
+
+            <!-- row -->
+            <div class="row">
+                <!-- col -->
+                <div class="col-md-12">
+
+                    <!-- tile -->
+                    <section class="tile">
+
+                        <!-- tile header -->
+                        <div class="tile-header dvd dvd-btm">
+                            <h1 class="custom-font"><strong>{{module_title}}</strong> 列表</h1>
+                            <ul class="controls">
+                                {% if permission %}
+                                <li><a href="{:url($data.module_url.'create')}"><i class="fa fa-plus mr-5"></i> 新增</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        <!-- /tile header -->
+
+                        <!-- tile body -->
+                        <div class="tile-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover table-custom" id="products-list">
+                                    <thead>
+                                        <tr>
+                                            <th>用户名</th>
+                                            <th>分机号</th>
+                                            <th>状态</th>
+                                            <th>权限</th>
+                                            <th>最后登录IP</th>
+                                            <th>最后登录时间</th>
+                                            {% if permission %}
+                                            <th>操作</th>
+                                            {% endif %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        {% if all %}
+                                            {% for item in show_list %}
+                                            <tr id="tr_{$item->id}">
+                                                <td>{{item.username}}</td>
+                                                <td>{{item.tel}}</td>
+                                                <td>{{item.status}}</td>
+                                                <td>{{item.permission}}</td>
+                                                <td>{{item.last_login_ip}}</td>
+                                                <td>{{item.last_login_time}}</td>
+                                                {% if permission %}
+                                                <td>
+                                                    <a class="btn btn-info" href="{:url($data.module_url.$item->id)}">
+                                                        <i class="glyphicon glyphicon-edit icon-white"></i>
+                                                        编辑
+                                                    </a>
+                                                    {% if item.status %}
+                                                    <a class="btn btn-danger" href="javascript:;"  onclick="if(confirm('确定要删除该管理员吗')){ deleteData({{item.id}})}">
+                                                        <i class="glyphicon glyphicon-trash icon-white"></i>
+                                                        删除
+                                                    </a>
+                                                    {% endif %}
+                                                    {% if item.status %}
+                                                    <a class="btn btn-danger" href="javascript:;"  onclick="if(confirm('确定要禁用该管理员吗')){ blockData({{item.id}})}">
+                                                        <i class="glyphicon glyphicon-trash icon-white"></i>
+                                                        禁用
+                                                    </a>
+                                                    <a class="btn btn-danger" href="javascript:;"  onclick="if(confirm('确定要删除该管理员账号吗')){ deleteData({{item.id}})}">
+                                                        <i class="glyphicon glyphicon-trash icon-white"></i>
+                                                        删除
+                                                    </a>
+                                                    {% endif %}
+                                                </td>
+                                                {% endif %}
+                                            </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-center">
+                            
+                            {% if show_list.has_previous %}
+                            <a href="?page={{ show_list.previous_page_number }}">previous</a>
+                            {% endif %}
+ 
+                            Page {{ contacts.number }} of {{ contacts.paginator.num_pages }}.
+        
+                            {% if show_list.has_next %}
+                            <a href="?page={{ show_list.next_page_number }}">next</a>
+                            {% endif %}
+
+                            </div>
+                        </div>
+                        <!-- /tile body -->
+
+                    </section>
+                    <!-- /tile -->
+
+                </div>
+                <!-- /col -->
+            </div>
+            <!-- /row -->
+
+        </div>
+        <!-- /page content -->
+        <script type="text/javascript">
+        function deleteData(id){
+            $.ajax({
+                type:"POST",
+                url:"{:url($data.module_url.'delete')}/"+id,
+                success:function(data){
+                    if(data.error == 0){
+                        $('#tr_'+data.id).remove();
+                    }
+                    $('.alert').html(data.msg).show();
+                    setTimeout(function() {
+                        $('.alert').hide();
+                    }, 3000);
+                }
+            });
+        }
+
+        function blockData(id){
+            $.ajax({
+                type:"POST",
+                url:"{:url($data.module_url.'block')}/"+id,
+                success:function(data){
+                    if(data.error == 0){
+                        $('#tr_'+data.id).remove();
+                    }
+                    $('.alert').html(data.msg).show();
+                    setTimeout(function() {
+                        $('.alert').hide();
+                    }, 3000);
+                }
+            });
+        }
+        </script>
+
+    </div>
+
+</section>
+<!--/ CONTENT -->
+{% include 'common/footer.html' %}
